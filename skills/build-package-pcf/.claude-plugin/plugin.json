@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "build-package-pcf",
+  "displayName": "Build & Package PCF",
+  "description": "Build, validate, test, and package Microsoft Power Apps Component Framework components.",
+  "author": {
+    "name": "Emad Beshai",
+    "url": "https://github.com/emadbeshai365"
+  },
+  "homepage": "https://github.com/emadbeshai365/Power_Platform_AI_Skills/tree/main/skills/build-package-pcf",
+  "repository": "https://github.com/emadbeshai365/Power_Platform_AI_Skills",
+  "keywords": [
+    "power-platform",
+    "power-apps",
+    "pcf",
+    "dataverse"
+  ]
+}
