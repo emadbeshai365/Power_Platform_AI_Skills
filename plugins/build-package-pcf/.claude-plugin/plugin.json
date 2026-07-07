@@ -7,8 +7,9 @@
     "name": "Emad Beshai",
     "url": "https://github.com/emadbeshai365"
   },
-  "homepage": "https://github.com/emadbeshai365/Power_Platform_AI_Skills/tree/main/skills/build-package-pcf",
+  "homepage": "https://github.com/emadbeshai365/Power_Platform_AI_Skills/tree/main/plugins/build-package-pcf",
   "repository": "https://github.com/emadbeshai365/Power_Platform_AI_Skills",
+  "skills": "./skills/",
   "keywords": [
     "power-platform",
     "power-apps",

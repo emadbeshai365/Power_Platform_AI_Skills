@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "build-package-pcf",
-      "source": "./skills/build-package-pcf",
+      "source": "./plugins/build-package-pcf",
       "description": "Build, validate, test, and package Microsoft Power Apps Component Framework components."
     }
   ]

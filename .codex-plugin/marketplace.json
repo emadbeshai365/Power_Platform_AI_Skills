@@ -1,0 +1,20 @@
+{
+  "name": "power-platform-ai-skills",
+  "interface": {
+    "displayName": "Power Platform AI Skills"
+  },
+  "plugins": [
+    {
+      "name": "build-package-pcf",
+      "source": {
+        "source": "local",
+        "path": "./plugins/build-package-pcf"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}
