@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "build-package-pcf",
   "displayName": "Build & Package PCF",
-  "description": "Build, validate, test, and package Microsoft Power Apps Component Framework components.",
+  "description": "Design, implement, review, troubleshoot, test, optimize, and package production-grade Microsoft Power Apps Component Framework components.",
   "author": {
     "name": "Emad Beshai",
     "url": "https://github.com/emadbeshai365"

@@ -1,4 +1,4 @@
 interface:
   display_name: "Build & Package PCF"
-  short_description: "Build and package Power Apps PCF components"
-  default_prompt: "Use $build-package-pcf to create, validate, build, and package a production-ready PCF component."
+  short_description: "Engineer production-grade Power Apps PCF components"
+  default_prompt: "Use $build-package-pcf to design, implement, test, troubleshoot, and package a production-grade PCF component."

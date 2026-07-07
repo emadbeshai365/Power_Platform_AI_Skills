@@ -7,7 +7,7 @@
     {
       "name": "build-package-pcf",
       "source": "./plugins/build-package-pcf",
-      "description": "Build, validate, test, and package Microsoft Power Apps Component Framework components."
+      "description": "Engineer production-grade Microsoft Power Apps Component Framework components from architecture through ALM."
     }
   ]
 }

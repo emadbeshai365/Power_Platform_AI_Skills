@@ -1,7 +1,7 @@
 {
   "name": "build-package-pcf",
-  "version": "0.1.0",
-  "description": "Build, validate, test, and package Microsoft Power Apps Component Framework components.",
+  "version": "0.2.0",
+  "description": "Design, implement, review, troubleshoot, test, optimize, and package production-grade Microsoft Power Apps Component Framework components.",
   "author": {
     "name": "Emad Beshai",
     "url": "https://github.com/emadbeshai365"
@@ -17,8 +17,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Build & Package PCF",
-    "shortDescription": "Build and package Power Apps PCF components.",
-    "longDescription": "Create or modify PCF field and dataset controls, validate their implementation, run production builds, and package managed or unmanaged Dataverse solutions.",
+    "shortDescription": "Engineer production-grade Power Apps PCF components.",
+    "longDescription": "Design, scaffold, implement, review, troubleshoot, test, optimize, version, and package field or dataset PCF controls using standard DOM or React virtual architectures.",
     "developerName": "Emad Beshai",
     "category": "Developer Tools",
     "capabilities": [
@@ -26,9 +26,9 @@
     ],
     "websiteURL": "https://github.com/emadbeshai365/Power_Platform_AI_Skills",
     "defaultPrompt": [
-      "Build a production-ready PCF field control.",
-      "Package this PCF component as a managed solution.",
-      "Diagnose and fix this PCF build failure."
+      "Design and build a production-grade PCF control.",
+      "Review this PCF component against Microsoft guidance.",
+      "Diagnose, test, and package this PCF project."
     ]
   }
 }

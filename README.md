@@ -6,7 +6,7 @@ Reusable Claude and Codex skills for Microsoft Power Platform development.
 
 ### `build-package-pcf`
 
-Creates, modifies, validates, tests, and packages Microsoft Power Apps Component Framework (PCF) components. It supports field and dataset controls, standard HTML and React rendering, production builds, and managed or unmanaged Dataverse solution packages.
+Designs, scaffolds, implements, reviews, troubleshoots, tests, optimizes, versions, and packages production-grade Microsoft Power Apps Component Framework (PCF) components. It includes architecture and host selection, manifest engineering, field and dataset patterns, React virtual controls, an indexed guide to Microsoft's official samples, accessibility/security/performance gates, deterministic project auditing, and Dataverse ALM.
 
 See [`plugins/build-package-pcf/skills/build-package-pcf/SKILL.md`](plugins/build-package-pcf/skills/build-package-pcf/SKILL.md).
 
