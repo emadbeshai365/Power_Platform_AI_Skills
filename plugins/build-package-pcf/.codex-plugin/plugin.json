@@ -1,7 +1,7 @@
 {
   "name": "build-package-pcf",
-  "version": "0.2.0",
-  "description": "Design, implement, review, troubleshoot, test, optimize, and package production-grade Microsoft Power Apps Component Framework components.",
+  "version": "0.3.0",
+  "description": "Design, implement, review, troubleshoot, test, optimize, and package production-grade Microsoft Power Apps Component Framework components with host-aware validation.",
   "author": {
     "name": "Emad Beshai",
     "url": "https://github.com/emadbeshai365"
@@ -18,7 +18,7 @@
   "interface": {
     "displayName": "Build & Package PCF",
     "shortDescription": "Engineer production-grade Power Apps PCF components.",
-    "longDescription": "Design, scaffold, implement, review, troubleshoot, test, optimize, version, and package field or dataset PCF controls using standard DOM or React virtual architectures.",
+    "longDescription": "Design, scaffold, implement, review, troubleshoot, test, optimize, version, and package field or dataset PCF controls with host compatibility, advanced patterns, and release validation.",
     "developerName": "Emad Beshai",
     "category": "Developer Tools",
     "capabilities": [

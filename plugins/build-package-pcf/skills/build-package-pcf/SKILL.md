@@ -14,7 +14,7 @@ Act as a senior PCF engineer. Own the full lifecycle from architecture and publi
 3. Distinguish four architectures explicitly: standard field, React virtual field, standard dataset, and React virtual dataset.
 4. Do not convert a standard control to virtual by changing only `control-type`; scaffold a new React control and port the implementation.
 5. Do not access host DOM, undocumented context members, `Xrm`, or `formContext` from a PCF component.
-6. Check API and manifest-element availability for every intended host. Model-driven, canvas, and Power Pages are not capability-equivalent.
+6. Check every API and manifest element against the explicit host matrix. Model-driven, canvas, and Power Pages are not capability-equivalent.
 7. Treat `updateView` as frequent, nullable, and potentially re-entrant. Keep it idempotent and avoid unguarded network work.
 8. Do not deploy development bundles. A Release solution build and a production PCF bundle are related but distinct controls.
 9. Treat `SolutionPackageType` (`Managed`, `Unmanaged`, or `Both`) independently from build configuration.
@@ -23,11 +23,15 @@ Act as a senior PCF engineer. Own the full lifecycle from architecture and publi
 ## Route to the right reference
 
 - Read [architecture-and-hosts.md](references/architecture-and-hosts.md) before selecting PCF, component type, framework, or host APIs.
+- Read [host-api-capability-matrix.md](references/host-api-capability-matrix.md) before using a context API or promising cross-host support.
 - Read [manifest-reference.md](references/manifest-reference.md) when designing or changing the manifest, resources, properties, datasets, events, features, or external services.
 - Read [lifecycle-and-patterns.md](references/lifecycle-and-patterns.md) when implementing lifecycle methods, state synchronization, async operations, React, or datasets.
+- Read [advanced-component-patterns.md](references/advanced-component-patterns.md) for object outputs, custom events, advanced datasets, grid customizers, Fluent theming, files, images, lookups, popups, or linking.
+- Read [power-pages-compatibility.md](references/power-pages-compatibility.md) for any component intended for Power Pages. Treat its compatibility gate as mandatory.
 - Read [microsoft-sample-index.md](references/microsoft-sample-index.md) before coding an unfamiliar pattern. Choose the closest official sample and inspect its manifest plus implementation.
 - Read [testing-and-quality.md](references/testing-and-quality.md) before declaring a component complete.
 - Read [packaging-alm.md](references/packaging-alm.md) for versioning, solution strategy, production packaging, and deployment.
+- Read [ci-and-governance.md](references/ci-and-governance.md) when building CI, validating release artifacts, adopting preview features, or refreshing Microsoft-source coverage.
 - Read [troubleshooting.md](references/troubleshooting.md) when a scaffold, build, harness, push, import, or runtime behavior fails.
 
 Resolve bundled script paths relative to this `SKILL.md`, not the user's current project directory. In commands below, replace `<skill-directory>` with the absolute directory containing this file.
@@ -48,12 +52,18 @@ For an existing project, run the bundled audit:
 powershell -NoProfile -ExecutionPolicy Bypass -File <skill-directory>/scripts/Inspect-PcfProject.ps1 -ProjectPath <component-folder>
 ```
 
+On Windows, macOS, or Linux with Node.js, prefer the cross-platform audit and declare the promised hosts:
+
+```bash
+node <skill-directory>/scripts/inspect-pcf-project.mjs <component-folder> --hosts model-driven,canvas
+```
+
 Capture these decisions before editing:
 
 | Decision | Required outcome |
 | --- | --- |
 | Problem | Explain the maker/user problem and why PCF is appropriate. |
-| Hosts | Model-driven, canvas, Power Pages, or an explicit subset. |
+| Hosts | Model-driven, canvas, Power Pages, or an explicit subset; never claim generic “all hosts.” |
 | Binding | Field properties or dataset plus property-set mappings. |
 | Rendering | Standard DOM or React virtual, with rationale. |
 | Data | Inputs, bound values, outputs, events, dataset columns, Web API calls. |
@@ -93,6 +103,8 @@ Define only the contract the component needs:
 - Use `bound` for values written back to the host.
 - Use `input` for maker configuration.
 - Use output properties or events only when the host scenario supports them.
+- For `Object` outputs, define the schema contract before implementation and implement `getOutputSchema`; add Canvas schema dependencies where required.
+- Treat custom events and dependent-library features as preview unless current Microsoft documentation says otherwise. Record the acceptance decision.
 - Use `type-group` when one logical property intentionally accepts multiple compatible types.
 - Use dataset `property-set` entries for maker-selected semantic column roles.
 - Declare every code, CSS, RESX, image, platform-library, feature, and external domain resource accurately.
@@ -123,6 +135,7 @@ npm run build
 - Avoid unnecessary `refresh()` calls and whole-dataset rerenders.
 - Use stable record IDs as keys and virtualize large visual collections when appropriate.
 - Verify dataset behavior in the real target host; the harness is not a Dataverse emulator.
+- For Power Apps grid customizers, keep cell renderers/editors pure, lightweight, accessible, and free of data mutation.
 
 ### React virtual controls
 
@@ -146,6 +159,7 @@ npm run build
 - Never embed credentials, tokens, environment URLs, or secrets in the bundle.
 - Use asynchronous network calls and handle offline, timeout, retry, and permission failures.
 - Use `context.navigation`, device, utility, formatting, and theming APIs only after checking host availability.
+- Use `context.fluentDesignLanguage` tokens for supported modern theming; preserve a tested fallback where the target host does not expose them.
 - Scope CSS beneath the component root. Do not use broad selectors that can affect the host application.
 
 ## Phase 6: Verify in layers
@@ -157,6 +171,12 @@ npm run lint --if-present
 npm run test --if-present
 npm run build
 npm run build -- --buildMode production
+```
+
+Run the cross-platform semantic audit with every release host. A passing PAC build proves schema acceptance; it does not prove host compatibility:
+
+```bash
+node <skill-directory>/scripts/inspect-pcf-project.mjs <component-folder> --hosts <comma-separated-hosts> --json
 ```
 
 Use `npm start watch` for the local harness. Exercise nulls, boundary values, disabled state, resize, localization, keyboard use, and error states. Then test host-dependent behavior in an authorized development environment.
@@ -185,6 +205,8 @@ Before release, verify:
 - the PCF bundle was built in production mode;
 - the solution package type matches its destination;
 - generated ZIP files exist and are not source-controlled;
+- each artifact was created by the current build, opens as a ZIP, contains solution metadata, and reports the intended managed state;
+- component and solution versions follow the repository's version policy;
 - environment-specific behavior and dependencies are documented.
 
 ## Phase 8: Deploy only with authorization

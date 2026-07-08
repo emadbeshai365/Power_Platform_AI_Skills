@@ -1,0 +1,50 @@
+name: PCF CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+env:
+  COMPONENT_PATH: src/MyControl
+  SOLUTION_PROJECT: solutions/MySolution/MySolution.cdsproj
+  PCF_HOSTS: model-driven,canvas
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: ${{ env.COMPONENT_PATH }}/package-lock.json
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore locked dependencies
+        working-directory: ${{ env.COMPONENT_PATH }}
+        run: npm ci
+      - name: Audit PCF contract and host compatibility
+        run: node tools/build-package-pcf/scripts/inspect-pcf-project.mjs "${{ env.COMPONENT_PATH }}" --hosts "${{ env.PCF_HOSTS }}" --json
+      - name: Lint
+        working-directory: ${{ env.COMPONENT_PATH }}
+        run: npm run lint --if-present
+      - name: Test
+        working-directory: ${{ env.COMPONENT_PATH }}
+        run: npm run test --if-present
+      - name: Build production bundle
+        working-directory: ${{ env.COMPONENT_PATH }}
+        run: npm run build -- --buildMode production
+      - name: Build Release solution
+        run: dotnet build "${{ env.SOLUTION_PROJECT }}" --configuration Release
+      - name: Publish solution packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: pcf-solution-packages
+          path: solutions/**/bin/Release/**/*.zip
+          if-no-files-found: error

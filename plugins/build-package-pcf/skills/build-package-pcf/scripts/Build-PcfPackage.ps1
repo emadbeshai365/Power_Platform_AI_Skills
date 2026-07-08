@@ -5,12 +5,15 @@ param(
     [ValidateSet('Release', 'Debug')] [string]$Configuration = 'Release',
     [ValidateSet('Managed', 'Unmanaged', 'Both')] [string]$ExpectedPackageType,
     [switch]$SkipInstall,
+    [switch]$AllowUnlockedInstall,
     [switch]$SkipLint,
     [switch]$SkipTests
 )
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+$buildStartedUtc = [DateTime]::UtcNow
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 function Resolve-SingleFile {
     param(
@@ -66,8 +69,11 @@ $projectReferences = @($solutionXml.SelectNodes("//*[local-name()='ProjectRefere
 if ($projectReferences.Count -eq 0) {
     throw "The solution project contains no ProjectReference. Add the PCF project with pac solution add-reference."
 }
-if (@($projectReferences | Where-Object { $_ -match [regex]::Escape($pcfProject.Name) }).Count -eq 0) {
-    Write-Warning "No ProjectReference text matched $($pcfProject.Name). Verify that this solution packages the intended component."
+$resolvedReferences = @($projectReferences | ForEach-Object {
+    [System.IO.Path]::GetFullPath((Join-Path $solutionDirectory $_))
+})
+if ($resolvedReferences -notcontains $pcfProject.FullName) {
+    throw "The solution does not reference the exact component project: $($pcfProject.FullName)"
 }
 if ($ExpectedPackageType -and $packageType -ne $ExpectedPackageType) {
     throw "Expected SolutionPackageType '$ExpectedPackageType' but the .cdsproj declares '$packageType'."
@@ -88,6 +94,9 @@ try {
     if (-not $SkipInstall -and -not (Test-Path -LiteralPath (Join-Path $componentDirectory 'node_modules'))) {
         if (Test-Path -LiteralPath (Join-Path $componentDirectory 'package-lock.json')) {
             Invoke-Checked -Executable $npm.Source -Arguments @('ci') -Description 'Restore locked npm dependencies'
+        }
+        elseif (-not $AllowUnlockedInstall) {
+            throw 'package-lock.json is missing. Commit a lockfile or explicitly pass -AllowUnlockedInstall for non-release experimentation.'
         }
         else {
             Invoke-Checked -Executable $npm.Source -Arguments @('install') -Description 'Install npm dependencies'
@@ -127,29 +136,39 @@ else {
 $outputDirectory = Join-Path $solutionDirectory ("bin/{0}" -f $Configuration)
 $packages = @()
 if (Test-Path -LiteralPath $outputDirectory) {
-    $packages = @(Get-ChildItem -LiteralPath $outputDirectory -Filter '*.zip' -File -Recurse | Sort-Object LastWriteTime -Descending)
+    $packages = @(Get-ChildItem -LiteralPath $outputDirectory -Filter '*.zip' -File -Recurse |
+        Where-Object { $_.LastWriteTimeUtc -ge $buildStartedUtc.AddSeconds(-2) } |
+        Sort-Object LastWriteTime -Descending)
 }
 
 if ($packages.Count -eq 0) {
-    throw "The solution build succeeded, but no ZIP package was found under $outputDirectory. Inspect the .cdsproj output settings."
+    throw "The solution build succeeded, but no ZIP package created by this run was found under $outputDirectory. Inspect the .cdsproj output settings."
 }
 
 Write-Host 'Generated solution package(s):'
-$packages | ForEach-Object {
-    $artifactType = if ($_.BaseName -match '(?i)managed' -and $_.BaseName -notmatch '(?i)unmanaged') {
-        'Managed'
+$artifactFacts = $packages | ForEach-Object {
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($_.FullName)
+    try {
+        $solutionEntry = $archive.Entries | Where-Object { $_.FullName -ieq 'solution.xml' } | Select-Object -First 1
+        if (-not $solutionEntry) { throw "Package does not contain solution.xml: $($_.FullName)" }
+        $reader = [System.IO.StreamReader]::new($solutionEntry.Open())
+        try { [xml]$packageSolution = $reader.ReadToEnd() } finally { $reader.Dispose() }
+        $managedNode = $packageSolution.SelectSingleNode("//*[local-name()='Managed']")
+        $artifactType = if ($managedNode -and [string]$managedNode.InnerText -eq '1') { 'Managed' } else { 'Unmanaged' }
     }
-    elseif ($_.BaseName -match '(?i)unmanaged') {
-        'Unmanaged'
+    finally {
+        $archive.Dispose()
     }
-    else {
-        $packageType
+    if ($ExpectedPackageType -and $ExpectedPackageType -ne 'Both' -and $artifactType -ne $ExpectedPackageType) {
+        throw "Artifact $($_.Name) is '$artifactType', expected '$ExpectedPackageType'."
     }
     [pscustomobject]@{
         Type = $artifactType
         FullName = $_.FullName
         Length = $_.Length
         LastWriteTime = $_.LastWriteTime
+        Sha256 = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
     }
-} | Format-Table -AutoSize
+}
+$artifactFacts | Format-Table -AutoSize
 $packages.FullName

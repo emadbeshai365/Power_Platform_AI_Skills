@@ -1,5 +1,7 @@
 # Microsoft PCF sample index
 
+> Source snapshot: reviewed 2026-07-08 against Microsoft `PowerApps-Samples` commit `27394f76c38a2c3fad24b5d705e92a3c4850db8e`. Refresh using [ci-and-governance.md](ci-and-governance.md).
+
 ## Contents
 
 - How to use this index
@@ -42,7 +44,7 @@ Use Microsoft's [PowerApps-Samples/component-framework](https://github.com/micro
 | [IFrameControl](https://github.com/microsoft/PowerApps-Samples/tree/master/component-framework/IFrameControl) | Standard multi-property field; both app types | Binding multiple form columns as component inputs. | Validate URLs, CSP, origin, and external-content security. |
 | [MapControl](https://github.com/microsoft/PowerApps-Samples/tree/master/component-framework/MapControl) | Standard multi-property field; both app types | Combining address properties into a visualization. | External map service licensing, keys, domains, CSP, and privacy require redesign. |
 | [ImageUploadControl](https://github.com/microsoft/PowerApps-Samples/tree/master/component-framework/ImageUploadControl) | Standard field; both app types | `Device.pickFile`, preview/reset interaction. | Validate file size/type, object URL cleanup, and real Dataverse upload strategy. |
-| [ObjectOutputControl](https://github.com/microsoft/PowerApps-Samples/tree/master/component-framework/ObjectOutputControl) | React virtual; model-driven and canvas | Object-type output properties and consuming outputs. | Verify host support and maker consumption semantics. |
+| [ObjectOutputControl](https://github.com/microsoft/PowerApps-Samples/tree/master/component-framework/ObjectOutputControl) | React virtual; model-driven and canvas | Object output, hidden schema input, `property-dependencies`, `getOutputSchema`. | Pre-release sample; validate schema subset and maker consumption semantics. |
 
 ## Dataset and grid samples
 

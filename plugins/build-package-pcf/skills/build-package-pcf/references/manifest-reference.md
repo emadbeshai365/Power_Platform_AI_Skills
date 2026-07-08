@@ -5,10 +5,12 @@
 - Contract-first workflow
 - Control identity
 - Properties and outputs
+- Object outputs and Canvas schema dependencies
 - Datasets and property sets
 - Resources and React platform libraries
 - Feature usage and external services
-- Events and host-specific elements
+- Events, Canvas defaults, and host-specific elements
+- Dependent libraries and platform actions
 - Manifest review checklist
 - Official references
 
@@ -64,6 +66,25 @@ The control identity combines namespace and constructor. Keep both stable after 
 | `output` | Output-only contract where supported by the schema/host. |
 
 Do not infer output behavior from the TypeScript type alone. Confirm the manifest usage and intended host.
+
+### Object outputs
+
+Object outputs require an explicit runtime schema:
+
+```xml
+<property
+  name="Data"
+  display-name-key="Data_DisplayName"
+  description-key="Data_Description"
+  of-type="Object"
+  usage="output"
+  required="true" />
+```
+
+- Implement `getOutputSchema(context)` and return a schema for every Object output.
+- Use only Microsoft's supported JSON Schema subset.
+- For Canvas, follow the current Object Output sample: define the hidden schema input and connect it to the output with `property-dependencies`.
+- Treat the object shape as a versioned public contract. Avoid unbounded or framework-owned objects.
 
 ### Common type families
 
@@ -179,9 +200,30 @@ Declare every contacted domain. Explain premium licensing and client-side securi
 
 ## Events and host-specific elements
 
-Canvas-oriented manifest features include events, property dependencies, and external-service declarations. Model-driven features include dataset/property-set and feature-usage. Availability changes independently by element; always check the “Available for” section of the current schema page.
+Custom events are currently pre-release for model-driven and Canvas apps:
+
+```xml
+<event
+  name="onCommit"
+  display-name-key="OnCommit_DisplayName"
+  description-key="OnCommit_Description" />
+```
+
+Build after adding events, raise the generated `context.events.onCommit()` callback intentionally, and document the Power Fx or model-driven handler configuration. Do not promise Power Pages support.
+
+Canvas-only manifest behavior includes `property-dependencies`, `property-dependency`, and `pfx-default-value`. Availability changes independently by element; always check the **Available for** section of the current schema page.
 
 Do not add a manifest node merely because it exists. Tie it to an implemented behavior and a supported host.
+
+## Dependent libraries and platform actions
+
+Dependent libraries are preview. Record preview acceptance and isolate the behavior before using them.
+
+```xml
+<platform-action action-type="afterPageLoad" />
+```
+
+`platform-action` is model-driven only. Do not include it in a Canvas or Power Pages contract.
 
 ## Manifest review checklist
 
@@ -190,12 +232,15 @@ Do not add a manifest node merely because it exists. Tie it to an implemented be
 - `control-type` matches implementation interface.
 - Every property has correct usage, type, requirement, and localization keys.
 - `getOutputs` returns only declared outputs.
+- Every Object output has a valid `getOutputSchema` entry and required Canvas dependency.
+- Every event has localized metadata, generated typing, documented handler wiring, and preview acceptance.
 - Dataset roles are semantic and reusable.
 - All resource files exist and are declared once in deterministic order.
 - React/Fluent platform libraries match current supported ranges.
 - Feature usage matches actual API calls.
 - External domains are complete and licensing impact is documented.
 - Every element is supported by every promised host or guarded by a host-specific variant.
+- Canvas-only defaults/dependencies and model-driven-only platform actions do not leak into incompatible variants.
 - Build regenerates types without errors.
 
 ## Official references
@@ -206,3 +251,8 @@ Do not add a manifest node merely because it exists. Tie it to an implemented be
 - [Property-set element](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/manifest-schema-reference/property-set)
 - [Resources element](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/manifest-schema-reference/resources)
 - [React controls and platform libraries](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/react-controls-platform-libraries)
+- [Object output sample](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/sample-controls/object-output)
+- [getOutputSchema](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/reference/control/getoutputschema)
+- [Property dependencies](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/manifest-schema-reference/property-dependencies)
+- [Define a custom event](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/tutorial-define-event)
+- [Platform action](https://learn.microsoft.com/en-us/power-apps/developer/component-framework/manifest-schema-reference/platform-action)

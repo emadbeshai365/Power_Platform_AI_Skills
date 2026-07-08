@@ -63,7 +63,7 @@ Design questions:
 | Suitable for small native DOM controls or required Power Pages support. | Suitable for substantial interactive UI in model-driven/canvas apps. |
 | May host React manually, but bundles/rendering are component-owned. | Reuses platform React/Fluent libraries and reduces bundle duplication. |
 
-Prefer React virtual for new, nontrivial model-driven/canvas UI. Prefer standard when direct DOM is genuinely simpler or the target includes Power Pages. Microsoft states React virtual controls/platform libraries are not supported for Power Pages; do not promise parity there.
+Prefer React virtual for new, nontrivial model-driven/canvas UI. Prefer standard when direct DOM is genuinely simpler or the target includes Power Pages. Microsoft states React virtual controls/platform libraries are not supported for Power Pages; apply the complete gate in [power-pages-compatibility.md](power-pages-compatibility.md), not only a rendering check.
 
 Do not change only `control-type="standard"` to `virtual`. Microsoft explicitly requires creating a new React-template control and porting the manifest and implementation.
 
@@ -75,10 +75,10 @@ Treat availability as a per-API and per-manifest-element question, not a blanket
 | --- | --- | --- | --- |
 | Standard field controls | Supported | Supported | Supported with documented limitations. |
 | React virtual/platform libraries | Supported | Supported | Not supported as an equivalent reactive experience. |
-| Dataset behavior | Strong model-driven support | Supported patterns differ; validate component and feature | Limited; consult current Power Pages guidance. |
+| Dataset behavior | Strong model-driven support | Supported patterns differ; validate component and feature | Do not promise general dataset support. |
 | `context.webAPI` | Available | Do not assume availability; verify current API reference | Host-specific restrictions. |
 | Navigation/device/utility APIs | Per-method availability | Per-method availability | Subset only. |
-| Manifest elements | Per-element availability | Per-element availability | Separate Power Pages limitations. |
+| Manifest elements | Per-element availability | Per-element availability | Restricted field scenario; apply the mandatory Pages rejection checks. |
 
 For each used API, open its Microsoft API reference and record “Available for.” For each manifest element, check the manifest schema reference. If a task spans hosts, implement capability checks and graceful degradation.
 
