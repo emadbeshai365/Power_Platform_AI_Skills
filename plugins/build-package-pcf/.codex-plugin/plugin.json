@@ -1,6 +1,6 @@
 {
   "name": "build-package-pcf",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Design, implement, review, troubleshoot, test, optimize, and package production-grade Microsoft Power Apps Component Framework components with host-aware validation.",
   "author": {
     "name": "Emad Beshai",

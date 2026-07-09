@@ -6,8 +6,14 @@
   "plugins": [
     {
       "name": "build-package-pcf",
+      "displayName": "Build & Package PCF",
       "source": "./plugins/build-package-pcf",
-      "description": "Engineer production-grade Microsoft Power Apps Component Framework components from architecture through ALM."
+      "description": "Engineer production-grade Microsoft Power Apps Component Framework components from architecture through ALM.",
+      "version": "0.3.1",
+      "skills": [
+        "./skills/build-package-pcf"
+      ],
+      "strict": true
     }
   ]
 }
